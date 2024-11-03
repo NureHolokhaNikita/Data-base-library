@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        nav {
+            margin: 10px 0;
+        }
+
+        nav a {
+            margin: 0 15px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            font-size: 16px;
+            /* Размер текста в ячейках */
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        td {
+            background-color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Library Management System</h1>
+        <nav>
+            <a href="/books">Books</a>
+            <a href="/genres">Genres</a>
+            <a href="/clients">Clients</a>
+            <a href="/bookRequests">Book Requests</a>
+        </nav>
+    </header>
+    <main>
+        <h2>Welcome to the Library</h2>
+        <p>Select a section from the navigation bar to view information.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Book ID</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Writing Date</th>
+                    <th>Genre</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Данные о книгах будут добавлены сюда с помощью JavaScript -->
+            </tbody>
+        </table>
+    </main>
+
+    <script>
+        // Функция для загрузки данных о книгах
+        function loadBooks() {
+            fetch('http://localhost:5000/books')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Fetched data:', data);  // Логируем полученные данные
+                    const tableBody = document.querySelector('tbody');
+                    tableBody.innerHTML = ''; // Очищаем существующие строки
+
+                    // Проверяем, является ли data массивом
+                    if (Array.isArray(data)) {
+                        data.forEach(book => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                        <td>${book.book_id}</td>
+                        <td>${book.title}</td>
+                        <td>${book.author}</td>
+                        <td>${book.writing_date}</td>
+                        <td>${book.genre}</td>
+                    `;
+                            tableBody.appendChild(row);
+                        });
+                    } else {
+                        console.error('Received data is not an array:', data);
+                    }
+                })
+                .catch(error => console.error('Error fetching books:', error));
+        }
+
+        window.onload = loadBooks;
+    </script>
+</body>
+
+</html>
