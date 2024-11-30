@@ -31,9 +31,12 @@ def getAllGenres(conn):
         }
         genres.append(genre)
 
-    return genres  # Убедитесь, что возвращается список жанров
+    return genres
 
+def UpdateGenresInfo(conn):
+    query = """EXEC UpdateGenreAuthorInfo"""
+    conn.execute(query)
 
-# Пример вызова функции:
-# conn = pyodbc.connect('ваш строка подключения')
-# print(getAllGenres(conn))
+def ResetGenresInfo(conn):
+    query = """Update Genres set info = NUll"""
+    conn.execute(query)

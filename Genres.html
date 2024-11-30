@@ -58,6 +58,25 @@
         td {
             background-color: #fff;
         }
+
+        .buttons {
+            margin-bottom: 20px;
+        }
+
+        .buttons button {
+            margin-right: 10px;
+            padding: 10px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .buttons button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 
@@ -72,6 +91,11 @@
         </nav>
     </header>
     <main>
+        <div class="buttons">
+            <button id="updateGenresInfo">Update Genres Info</button>
+            <button id="resetGenresInfo">Reset Genres Info</button>
+        </div>
+
         <h2>Genres</h2>
         <table>
             <thead>
@@ -115,6 +139,37 @@
                 })
                 .catch(error => console.error('Error fetching genres:', error));
         }
+
+        function updateGenresInfo() {
+            fetch('http://localhost:5000/Genres/UpdateGenresInfo')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to update genres info: ' + response.statusText);
+                    }
+                    alert('Genres info updated successfully!');
+                    loadGenres();
+                })
+                .catch(error => console.error('Error updating genres info:', error));
+
+                loadGenres();
+        }
+
+        function resetGenresInfo() {
+            fetch('http://localhost:5000/Genres/ResetGenresInfo')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to reset genres info: ' + response.statusText);
+                    }
+                    alert('Genres info reset successfully!');
+                    loadGenres();
+                })
+                .catch(error => console.error('Error resetting genres info:', error));
+
+                loadGenres();
+        }
+
+        document.getElementById('updateGenresInfo').addEventListener('click', updateGenresInfo);
+        document.getElementById('resetGenresInfo').addEventListener('click', resetGenresInfo);
 
         window.onload = loadGenres;
     </script>

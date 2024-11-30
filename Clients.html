@@ -58,6 +58,31 @@
         td {
             background-color: #fff;
         }
+
+        .delete-section {
+            margin-bottom: 20px;
+        }
+
+        .delete-section input {
+            padding: 5px;
+            font-size: 16px;
+            width: 60px;
+            margin-right: 10px;
+        }
+
+        .delete-section button {
+            padding: 10px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .delete-section button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 
@@ -72,6 +97,12 @@
         </nav>
     </header>
     <main>
+        <div class="delete-section">
+            <h3>Delete Clients Older Than</h3>
+            <input type="number" id="daysInput" placeholder="Enter days" min="1">
+            <button id="deleteOldClients">Delete</button>
+        </div>
+
         <h2>Clients</h2>
         <table>
             <thead>
@@ -81,10 +112,10 @@
                     <th>Last Name</th>
                     <th>Birth Date</th>
                     <th>Registration Date</th>
+                    <th>Days since last Request</th>
                 </tr>
             </thead>
             <tbody>
-                <!-- Data will be dynamically loaded -->
             </tbody>
         </table>
     </main>
@@ -110,6 +141,7 @@
                                 <td>${client.last_name}</td>
                                 <td>${client.birth_date}</td>
                                 <td>${client.registration_date}</td>
+                                <td>${client.days_since_request}</td>
                             `;
                             tableBody.appendChild(row);
                         });
@@ -119,6 +151,26 @@
                 })
                 .catch(error => console.error('Error fetching clients:', error));
         }
+
+        function deleteOldClients() {
+            const days = document.getElementById('daysInput').value;
+            if (days && !isNaN(days) && days > 0) {
+                fetch(`http://localhost:5000/Clients/DeleteOldClients/${days}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to delete old clients: ' + response.statusText);
+                        }
+                        alert('Old clients deleted successfully!');
+                        loadClients();
+                    })
+                    .catch(error => console.error('Error deleting old clients:', error));
+            } else {
+                alert('Please enter a valid number of days.');
+            }
+            loadClients();
+        }
+
+        document.getElementById('deleteOldClients').addEventListener('click', deleteOldClients);
 
         window.onload = loadClients;
     </script>

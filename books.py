@@ -38,9 +38,4 @@ def getAllBooks(conn):
         }
         books.append(book)
 
-    return books  # Убедитесь, что возвращается список книг
-
-
-# Приклад виклику функції:
-# conn = pyodbc.connect('ваш рядок підключення')
-# print(getAllBooks(conn))
+    return books

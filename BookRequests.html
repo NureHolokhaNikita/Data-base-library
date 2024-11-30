@@ -122,7 +122,6 @@
                 </tr>
             </thead>
             <tbody id="requestsTableBody">
-                <!-- Data will be dynamically loaded -->
             </tbody>
         </table>
     </main>
@@ -131,7 +130,6 @@
         let currentClientIndex = 0;
         let clients = [];
 
-        // Function to fetch clients and initialize the view
         function loadClients() {
             fetch('http://localhost:5000/Clients')
                 .then(response => {
@@ -150,14 +148,12 @@
                 .catch(error => console.error('Error fetching clients:', error));
         }
 
-        // Function to display the current client
         function displayClient(client) {
             document.getElementById('clientName').innerText = `${client.first_name} ${client.last_name}`;
             document.getElementById('clientBirthDate').innerText = client.birth_date;
             document.getElementById('clientRegDate').innerText = client.registration_date;
         }
 
-        // Function to fetch and display book requests for the current client
         function loadRequests(clientId) {
             fetch(`http://localhost:5000/BookRequests/${clientId}`)
                 .then(response => {
@@ -185,7 +181,6 @@
                 .catch(error => console.error('Error fetching requests:', error));
         }
 
-        // Event listeners for navigation buttons
         document.getElementById('prevClient').addEventListener('click', () => {
             if (currentClientIndex > 0) {
                 currentClientIndex--;
@@ -202,7 +197,6 @@
             }
         });
 
-        // Load clients on page load
         window.onload = loadClients;
     </script>
 </body>

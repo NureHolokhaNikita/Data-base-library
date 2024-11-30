@@ -35,7 +35,6 @@ JOIN Clients AS C ON BR.client_id = C.client_id
 JOIN Books AS B ON BR.book_id = B.book_id
 WHERE BR.client_id = ?
 """
-    # Выполнение запроса с передачей параметра
     cursor = conn.cursor()
     cursor.execute(query, (client_id,))
     records = cursor.fetchall()
@@ -54,9 +53,4 @@ WHERE BR.client_id = ?
         }
         bookRequests.append(book)
 
-    return bookRequests  # Убедитесь, что возвращается список книг
-
-
-# Приклад виклику функції:
-# conn = pyodbc.connect('ваш рядок підключення')
-# print(getAllBooks(conn))
+    return bookRequests

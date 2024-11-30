@@ -67,11 +67,11 @@
     <header>
         <h1>Library Management System</h1>
         <nav>
-            <a href="D:/development/Python/Data-base-library/books.html">Books</a>
-            <a href="D:/development/Python/Data-base-library/genres.html">Genres</a>
-            <a href="D:/development/Python/Data-base-library/clients.html">Clients</a>
-            <a href="D:/development/Python/Data-base-library/BookRequests.html">Book Requests</a>
-        </nav>
+            <a href="books.html">Books</a>
+            <a href="genres.html">Genres</a>
+            <a href="clients.html">Clients</a>
+            <a href="bookRequests.html">Book Requests</a>
+        </nav>` 
     </header>
     <main>
         <h2>Welcome to the Library</h2>
@@ -88,13 +88,11 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- Данные о книгах будут добавлены сюда с помощью JavaScript -->
             </tbody>
         </table>
     </main>
 
     <script>
-        // Функция для загрузки данных о книгах
         function loadBooks() {
             fetch('http://localhost:5000/Books')
                 .then(response => {
@@ -104,11 +102,10 @@
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Fetched data:', data);  // Логируем полученные данные
+                    console.log('Fetched data:', data);
                     const tableBody = document.querySelector('tbody');
-                    tableBody.innerHTML = ''; // Очищаем существующие строки
+                    tableBody.innerHTML = '';
 
-                    // Проверяем, является ли data массивом
                     if (Array.isArray(data)) {
                         data.forEach(book => {
                             const row = document.createElement('tr');
