@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clients</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        nav {
+            margin: 10px 0;
+        }
+
+        nav a {
+            margin: 0 15px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        td {
+            background-color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Library Management System - Clients</h1>
+        <nav>
+            <a href="books.html">Books</a>
+            <a href="genres.html">Genres</a>
+            <a href="clients.html">Clients</a>
+            <a href="bookRequests.html">Book Requests</a>
+        </nav>
+    </header>
+    <main>
+        <h2>Clients</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Client ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Birth Date</th>
+                    <th>Registration Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be dynamically loaded -->
+            </tbody>
+        </table>
+    </main>
+
+    <script>
+        function loadClients() {
+            fetch('http://localhost:5000/Clients')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const tableBody = document.querySelector('tbody');
+                    tableBody.innerHTML = '';
+                    if (Array.isArray(data)) {
+                        data.forEach(client => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${client.client_id}</td>
+                                <td>${client.first_name}</td>
+                                <td>${client.last_name}</td>
+                                <td>${client.birth_date}</td>
+                                <td>${client.registration_date}</td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
+                    } else {
+                        console.error('Data is not an array:', data);
+                    }
+                })
+                .catch(error => console.error('Error fetching clients:', error));
+        }
+
+        window.onload = loadClients;
+    </script>
+</body>
+
+</html>

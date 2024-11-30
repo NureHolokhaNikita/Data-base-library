@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System - Client Requests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        nav {
+            margin: 10px 0;
+        }
+
+        nav a {
+            margin: 0 15px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            font-size: 16px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        td {
+            background-color: #fff;
+        }
+
+        .client-info {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+
+        .navigation-buttons button {
+            padding: 10px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .navigation-buttons button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Library Management System - Client Requests</h1>
+        <nav>
+            <a href="books.html">Books</a>
+            <a href="genres.html">Genres</a>
+            <a href="clients.html">Clients</a>
+            <a href="bookRequests.html">Book Requests</a>
+        </nav>
+    </header>
+    <main>
+        <div class="client-info">
+            <h2>Current Client: <span id="clientName">Loading...</span></h2>
+            <p>Birth Date: <span id="clientBirthDate">Loading...</span></p>
+            <p>Registration Date: <span id="clientRegDate">Loading...</span></p>
+        </div>
+
+        <div class="navigation-buttons">
+            <button id="prevClient">Previous Client</button>
+            <button id="nextClient">Next Client</button>
+        </div>
+
+        <h2>Book Requests</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Request ID</th>
+                    <th>Book Title</th>
+                    <th>Request Date</th>
+                    <th>Duration</th>
+                </tr>
+            </thead>
+            <tbody id="requestsTableBody">
+                <!-- Data will be dynamically loaded -->
+            </tbody>
+        </table>
+    </main>
+
+    <script>
+        let currentClientIndex = 0;
+        let clients = [];
+
+        // Function to fetch clients and initialize the view
+        function loadClients() {
+            fetch('http://localhost:5000/Clients')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch clients: ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    clients = data;
+                    if (clients.length > 0) {
+                        displayClient(clients[currentClientIndex]);
+                        loadRequests(clients[currentClientIndex].client_id);
+                    }
+                })
+                .catch(error => console.error('Error fetching clients:', error));
+        }
+
+        // Function to display the current client
+        function displayClient(client) {
+            document.getElementById('clientName').innerText = `${client.first_name} ${client.last_name}`;
+            document.getElementById('clientBirthDate').innerText = client.birth_date;
+            document.getElementById('clientRegDate').innerText = client.registration_date;
+        }
+
+        // Function to fetch and display book requests for the current client
+        function loadRequests(clientId) {
+            fetch(`http://localhost:5000/BookRequests/${clientId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch requests: ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const tableBody = document.getElementById('requestsTableBody');
+                    tableBody.innerHTML = '';
+                    if (Array.isArray(data)) {
+                        data.forEach(request => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${request.request_id}</td>
+                                <td>${request.Book_Title}</td>
+                                <td>${request.request_date}</td>
+                                <td>${request.request_duration} days</td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
+                    }
+                })
+                .catch(error => console.error('Error fetching requests:', error));
+        }
+
+        // Event listeners for navigation buttons
+        document.getElementById('prevClient').addEventListener('click', () => {
+            if (currentClientIndex > 0) {
+                currentClientIndex--;
+                displayClient(clients[currentClientIndex]);
+                loadRequests(clients[currentClientIndex].client_id);
+            }
+        });
+
+        document.getElementById('nextClient').addEventListener('click', () => {
+            if (currentClientIndex < clients.length - 1) {
+                currentClientIndex++;
+                displayClient(clients[currentClientIndex]);
+                loadRequests(clients[currentClientIndex].client_id);
+            }
+        });
+
+        // Load clients on page load
+        window.onload = loadClients;
+    </script>
+</body>
+
+</html>

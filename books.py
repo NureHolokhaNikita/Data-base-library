@@ -1,8 +1,5 @@
 import pyodbc
 import json
-
-import pyodbc
-import json
 from datetime import date
 
 class Book:
