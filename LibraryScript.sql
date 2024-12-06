@@ -124,3 +124,69 @@ BEGIN
     CLOSE genre_cursor;
     DEALLOCATE genre_cursor;
 END;
+
+
+//Перша функція
+CREATE FUNCTION GetLongest(@bookTitle NVARCHAR(255))
+RETURNS @ResultsTable TABLE (
+    ClientName NVARCHAR(255),
+    BookTitle NVARCHAR(255),
+    RequestDate DATE,
+    RequestDuration INT
+)
+AS
+BEGIN
+    DECLARE @maxDuration INT;
+
+    SELECT @maxDuration = MAX(r.request_duration)
+    FROM BookRequests r
+    JOIN Books b ON r.book_id = b.book_id
+    WHERE b.title = @bookTitle AND r.is_satisfied = 0;
+
+    IF @maxDuration IS NULL
+    BEGIN
+        INSERT INTO @ResultsTable (ClientName, BookTitle, RequestDate, RequestDuration)
+        VALUES ('Відсутні незадоволені запити для книги "' + @bookTitle + '"', NULL, NULL, NULL);
+        RETURN;
+    END;
+
+    INSERT INTO @ResultsTable (ClientName, BookTitle, RequestDate, RequestDuration)
+    SELECT CONCAT(c.first_name, ' ', c.last_name) AS ClientName,
+           b.title AS BookTitle,
+           r.request_date AS RequestDate,
+           r.request_duration AS RequestDuration
+    FROM BookRequests r
+    JOIN Books b ON r.book_id = b.book_id
+    JOIN Clients c ON r.client_id = c.client_id
+    WHERE b.title = @bookTitle AND r.is_satisfied = 0 AND r.request_duration = @maxDuration;
+
+    RETURN;
+END;
+
+
+//Друга функція
+CREATE FUNCTION GetLongest2(@bookTitle NVARCHAR(255))
+RETURNS NVARCHAR(MAX)
+AS
+BEGIN
+    DECLARE @result NVARCHAR(MAX);
+    	
+    -- Знаходимо найдовший незадоволений запит для конкретної книги
+    SELECT TOP 1 @result = CONCAT(
+        'Клієнт: ', c.first_name, ' ', c.last_name, 
+        ', Назва книги: ', b.title, 
+        ', Дата запиту: ', r.request_date, 
+        ', Тривалість: ', r.request_duration, ' днів')
+    FROM BookRequests r
+    JOIN Books b ON r.book_id = b.book_id
+    JOIN Clients c ON r.client_id = c.client_id
+    WHERE b.title = @bookTitle AND r.is_satisfied = 0 
+
+    IF @result IS NULL
+    BEGIN
+        RETURN CONCAT(N'Відсутні незадоволені запити для книги «', @bookTitle, N'»');
+    END;
+
+    RETURN @result;
+END;
+

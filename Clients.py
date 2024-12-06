@@ -37,7 +37,7 @@ JOIN BookRequests AS B ON C.client_id = B.client_id;
     cursor = conn.cursor()
     cursor.execute(query)
     records = cursor.fetchall()
-
+    print(records)
     clients = []
     for r in records:
         client = {

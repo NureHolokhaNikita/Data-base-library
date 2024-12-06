@@ -1,7 +1,12 @@
+import logging
 import pyodbc
 import json
 from datetime import date
 
+
+
+logging.basicConfig(level=logging.INFO)
+pyodbc.pooling = False
 class Book:
     def __init__(self, book_id, title, author, writing_date, name):
         self.book_id = book_id
@@ -39,3 +44,46 @@ def getAllBooks(conn):
         books.append(book)
 
     return books
+
+def getLongestOrders(conn, book_title):
+    query = "SELECT * FROM dbo.GetLongest(?)"
+    book_title = book_title.strip('"')
+    # Выполнение запроса с параметром
+    cursor = conn.cursor()
+    cursor.execute(query, (book_title,))
+    records = cursor.fetchall()
+    
+    if not records:
+        return {
+            "message": f"Відсутні незадоволені запити для книги «{book_title}»"
+        }
+    
+    longest_orders = []
+    for r in records:
+        order = {
+            "client_name": r[0],
+            "book_title": r[1],
+            "request_date": r[2],
+            "request_duration": r[3],
+        }
+        longest_orders.append(order)
+    
+    return longest_orders
+
+
+
+
+def getLongestOrderSummary(conn, book_title):
+    # SQL для вызова скалярной функции
+    query = "SELECT dbo.GetLongest2(?)"
+    book_title = book_title.strip('"')
+    # Выполнение запроса
+    cursor = conn.cursor()
+    cursor.execute(query, (book_title,))
+    result = cursor.fetchone()
+    
+    # Обработка результата
+    if result and result[0]:
+        return result[0]
+    else:
+        return f"Відсутні незадоволені запити для книги «{book_title}»"
